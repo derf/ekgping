@@ -1,0 +1,90 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use 5.010;
+
+use IO::Handle;
+use IPC::Run qw(harness);
+use Time::HiRes qw(usleep);
+
+our $VERSION = '0.1';
+
+my $host = shift;
+my $id = 0;
+my $last_id = 0;
+
+my $harness = harness(['ping', '-n', $host],
+	'<'  => \undef,
+	'>&' => \&parse_ping_output,
+);
+
+sub parse_ping_output {
+	my ($line) = @_;
+
+	chomp($line);
+
+	if ($line =~ m{ ^ \d+ \s bytes \s from \s \S+ \s icmp_req = (?<id> \d+ ) }x) {
+		$id = $+{id};
+	}
+}
+
+$harness->start();
+
+# Ignore first line
+$harness->pump();
+
+while(usleep(100_000)) {
+
+	$harness->pump_nb();
+
+	if ($id != $last_id) {
+		print '^';
+		$last_id = $id;
+	}
+	else {
+		print '_';
+	}
+
+	STDOUT->flush();
+}
+
+$harness->kill_kill( grace => 1 );
+
+__END__
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+=head1 VERSION
+
+=head1 DESCRIPTION
+
+=head1 OPTIONS
+
+=over
+
+=back
+
+=head1 EXIT STATUS
+
+=head1 CONFIGURATION
+
+None.
+
+=head1 DEPENDENCIES
+
+=over
+
+=back
+
+=head1 BUGS AND LIMITATIONS
+
+=head1 AUTHOR
+
+Copyright (C) 2011 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+
+=head1 LICENSE
+
+  0. You just DO WHAT THE FUCK YOU WANT TO.

@@ -10,14 +10,15 @@ use Time::HiRes qw(usleep);
 
 our $VERSION = '0.1';
 
-my $host = shift;
-my $id = 0;
+my $host    = shift;
+my $id      = 0;
 my $last_id = 0;
-my $is_beep = 1;
-my $was_beep = 1;
-my $no_reply = 0;
+my $beep;
+my $was_beep   = 1;
+my $dead_count = 0;
 
-my $ping = harness(['ping', '-n', $host],
+my $ping = harness(
+	[ 'ping', '-n', $host ],
 	'<'  => \undef,
 	'>&' => \&parse_ping_output,
 );
@@ -27,40 +28,38 @@ sub parse_ping_output {
 
 	chomp($line);
 
-	if ($line =~ m{ ^ \d+ \s bytes \s from \s \S+ \s icmp_req = (?<id> \d+ ) }x) {
+	if ( $line
+		=~ m{ ^ \d+ \s bytes \s from \s \S+ \s icmp_req = (?<id> \d+ ) }x )
+	{
 		$id = $+{id};
 	}
+
+	return;
 }
 
 $ping->start();
 
-sleep(2);
-
 # Ignore first line
 $ping->pump();
 
-while(usleep(100_000)) {
+while ( usleep(100_000) ) {
 
 	$ping->pump_nb();
 
-	if ($id != $last_id) {
-		$is_beep = 1;
-		print '^';
-		$last_id = $id;
-		$no_reply = 0;
+	if ( $id != $last_id ) {
+		$beep = 1;
+		print q{^};
+		$last_id    = $id;
+		$dead_count = 0;
 	}
 	else {
-		$is_beep = 0;
-		$no_reply++;
-		if ($no_reply > 15) {
-			$is_beep = 1;
+		$beep = 0;
+		$dead_count++;
+		if ( $dead_count > 30 ) {
+			$beep = 1;
 		}
 
 		print '_';
-	}
-
-	if ($is_beep) {
-		print 'O';
 	}
 
 	STDOUT->flush();

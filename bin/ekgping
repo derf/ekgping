@@ -18,7 +18,7 @@ my $beep;
 my $was_beep   = 1;
 my $dead_count = 0;
 my $column     = 0;
-my $column_max = (Term::Size::chars *STDOUT{IO})[0];
+my $column_max = ( Term::Size::chars * STDOUT { IO } )[0];
 
 my $ping = harness(
 	[ 'ping', '-n', $host ],
@@ -65,7 +65,7 @@ while ( usleep(100_000) ) {
 		$column = 0;
 	}
 
-	if ( $column != $column_max) {
+	if ( $column != $column_max ) {
 		print "\e[1C \e[1D\e[1D";
 	}
 

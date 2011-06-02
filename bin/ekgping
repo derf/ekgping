@@ -17,6 +17,7 @@ my $beep;
 my $was_beep   = 1;
 my $dead_count = 0;
 my $column     = 0;
+my $column_max = 80;
 
 my $ping = harness(
 	[ 'ping', '-n', $host ],
@@ -58,9 +59,13 @@ while ( usleep(100_000) ) {
 
 	$ping->pump_nb();
 
-	if ( $column++ == 80 ) {
+	if ( $column++ == $column_max ) {
 		print "\r";
 		$column = 0;
+	}
+
+	if ( $column != $column_max) {
+		print "\e[1C \e[1D\e[1D";
 	}
 
 	if ( $id != $last_id ) {

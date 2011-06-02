@@ -6,6 +6,7 @@ use 5.010;
 
 use IO::Handle;
 use IPC::Run qw(harness);
+use Term::Size;
 use Time::HiRes qw(usleep);
 
 our $VERSION = '0.1';
@@ -17,7 +18,7 @@ my $beep;
 my $was_beep   = 1;
 my $dead_count = 0;
 my $column     = 0;
-my $column_max = 80;
+my $column_max = (Term::Size::chars *STDOUT{IO})[0];
 
 my $ping = harness(
 	[ 'ping', '-n', $host ],

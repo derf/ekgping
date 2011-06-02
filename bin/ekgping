@@ -24,6 +24,9 @@ my $ping = harness(
 	'>&' => \&parse_ping_output,
 );
 
+local $SIG{TERM} = \&quit;
+local $SIG{INT}  = \&quit;
+
 sub parse_ping_output {
 	my ($line) = @_;
 
@@ -38,16 +41,24 @@ sub parse_ping_output {
 	return;
 }
 
+sub quit {
+	$ping->kill_kill( grace => 1 );
+	print "\e[?25h";
+	exit 0;
+}
+
 $ping->start();
 
 # Ignore first line
 $ping->pump();
 
+print "\e[?25l";
+
 while ( usleep(100_000) ) {
 
 	$ping->pump_nb();
 
-	if ($column++ == 80) {
+	if ( $column++ == 80 ) {
 		print "\r";
 		$column = 0;
 	}

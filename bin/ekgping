@@ -16,6 +16,7 @@ my $last_id = 0;
 my $beep;
 my $was_beep   = 1;
 my $dead_count = 0;
+my $column     = 0;
 
 my $ping = harness(
 	[ 'ping', '-n', $host ],
@@ -45,6 +46,11 @@ $ping->pump();
 while ( usleep(100_000) ) {
 
 	$ping->pump_nb();
+
+	if ($column++ == 80) {
+		print "\r";
+		$column = 0;
+	}
 
 	if ( $id != $last_id ) {
 		$beep = 1;

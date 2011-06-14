@@ -13,6 +13,7 @@ our $VERSION = '0.1';
 
 my $host    = shift;
 my $id      = 0;
+my $rtt     = 0;
 my $last_id = 0;
 my $beep;
 my $was_beep   = 1;
@@ -35,9 +36,14 @@ sub parse_ping_output {
 	chomp($line);
 
 	if ( $line
-		=~ m{ ^ \d+ \s bytes \s from \s \S+ \s icmp_req = (?<id> \d+ ) }x )
+		=~ m{ ^ \d+ \s bytes \s from \s \S+ \s
+			icmp_req = (?<id> \d+ ) \s
+			ttl = (?<ttl> \d+ ) \s
+			time = (?<time> [0-9.]+) \s ms }x
+		)
 	{
 		$id = $+{id};
+		$rtt = $+{time};
 	}
 
 	return;
@@ -71,7 +77,12 @@ while ( usleep(100_000) ) {
 
 	if ( $id != $last_id ) {
 		$beep = 1;
-		print q{^};
+		if ($rtt < 300) {
+			print q{^};
+		}
+		else {
+			print q{-};
+		}
 		$last_id    = $id;
 		$dead_count = 0;
 	}

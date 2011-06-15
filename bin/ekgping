@@ -23,7 +23,7 @@ my $dead_count = 0;
 my $column     = 0;
 my $column_max = Term::Size::chars;
 
-my $beep_file = dist_file( 'ekgping', 'beep.ogg' );
+my $beep_file;
 my $quiet = 0;
 
 GetOptions(
@@ -33,6 +33,8 @@ GetOptions(
 	'V|version'     => sub { say "ekgping version ${VERSION}"; exit 0 },
 
 ) or usage();
+
+$beep_file //= dist_file( 'ekgping', 'beep.ogg' );
 
 my $host       = shift or usage();
 my @ping_opts  = @ARGV;

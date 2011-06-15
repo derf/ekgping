@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use 5.010;
 
+use File::ShareDir qw(dist_file);
 use IO::Handle;
 use IPC::Run qw(harness io);
 use SDL::Mixer;
@@ -24,7 +25,8 @@ my $column     = 0;
 my $column_max = Term::Size::chars;
 
 my $mixer      = SDL::Mixer->new();
-my $beep_sound = SDL::Music->new('beep.ogg');
+my $beep_file  = dist_file('ekgping', 'beep.ogg');
+my $beep_sound = SDL::Music->new($beep_file);
 
 my $ping = harness(
 	[ 'ping', '-n', $host ],

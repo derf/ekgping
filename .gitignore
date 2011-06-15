@@ -1,0 +1,11 @@
+/Build
+/build/
+/_build/
+/blib/
+/cover_db/
+/lib/App/Dthumb/Data.pm
+/MANIFEST
+/MANIFEST.bak
+/MANIFEST.SKIP
+/MANIFEST.SKIP.bak
+/MYMETA.yml

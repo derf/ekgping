@@ -1,0 +1,21 @@
+ekgping - Electrocardiograph-like visual and audible ping
+---------------------------------------------------------
+
+http://finalrewind.org/projects/ekgping/
+
+Dependencies
+------------
+
+ * perl >= 5.10
+ * File::ShareDir
+ * IPC::Run
+ * SDL::Mixer
+ * SDL::Music
+ * Term::Size
+
+Installation
+------------
+
+$ perl Build.PL
+$ perl Build
+$ sudo perl Build install

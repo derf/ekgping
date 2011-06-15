@@ -5,8 +5,9 @@ use warnings;
 use 5.010;
 
 use File::ShareDir qw(dist_file);
+use Getopt::Long;
 use IO::Handle;
-use IPC::Run qw(harness io);
+use IPC::Run qw(harness);
 use SDL::Mixer;
 use SDL::Music;
 use Term::Size;
@@ -14,18 +15,27 @@ use Time::HiRes qw(usleep);
 
 our $VERSION = '0.0';
 
-my $host    = shift;
-my $id      = 0;
-my $rtt     = 0;
-my $last_id = 0;
-my $beep;
-my $was_beep   = 1;
+my $beep       = 0;
+my $id         = 0;
+my $rtt        = 0;
+my $last_id    = 0;
 my $dead_count = 0;
 my $column     = 0;
 my $column_max = Term::Size::chars;
 
+my $beep_file = dist_file( 'ekgping', 'beep.ogg' );
+my $quiet = 0;
+
+GetOptions(
+
+	'f|beep-file=s' => \$beep_file,
+	'q|quiet'       => \$quiet,
+	'V|version'     => sub { say "ekgping version ${VERSION}"; exit 0 },
+
+) or usage();
+
+my $host       = shift or usage();
 my $mixer      = SDL::Mixer->new();
-my $beep_file  = dist_file('ekgping', 'beep.ogg');
 my $beep_sound = SDL::Music->new($beep_file);
 
 my $ping = harness(
@@ -34,8 +44,9 @@ my $ping = harness(
 	'>&' => \&parse_ping_output,
 );
 
-local $SIG{TERM} = \&quit;
 local $SIG{INT}  = \&quit;
+local $SIG{TERM} = \&quit;
+local $SIG{QUIT} = \&quit;
 
 sub parse_ping_output {
 	my ($line) = @_;
@@ -46,7 +57,7 @@ sub parse_ping_output {
 		$line =~ m{ ^ \d+ \s bytes \s from \s \S+ \s
 			icmp_req = (?<id> \d+ ) \s
 			ttl = (?<ttl> \d+ ) \s
-			time = (?<time> [0-9.]+) \s ms }x
+			time = (?<time> [\d.]+) \s ms }x
 	  )
 	{
 		$id  = $+{id};
@@ -62,13 +73,19 @@ sub quit {
 	exit 0;
 }
 
+sub usage {
+	die("Usage: $0 [options] <host>\n");
+}
+
 $ping->start();
 
 # Ignore first line
 $ping->pump();
 
-$mixer->play_music( $beep_sound, 999_999 );
-$mixer->pause_music();
+if ( not $quiet ) {
+	$mixer->play_music( $beep_sound, 999_999 );
+	$mixer->pause_music();
+}
 
 print "\e[?25l";
 
@@ -110,11 +127,13 @@ while ( usleep(100_000) ) {
 
 	STDOUT->flush();
 
-	if ($beep) {
-		$mixer->resume_music();
-	}
-	else {
-		$mixer->pause_music();
+	if ( not $quiet ) {
+		if ($beep) {
+			$mixer->resume_music();
+		}
+		else {
+			$mixer->pause_music();
+		}
 	}
 }
 
@@ -128,7 +147,7 @@ B<ekgping> - Electrocardiograph-like visual and audible ping
 
 =head1 SYNOPSIS
 
-B<ekgping> I<host>
+B<ekgping> [B<-q>] [B<-f> I<file>] I<host>
 
 =head1 VERSION
 
@@ -150,7 +169,21 @@ a continuous beep until the host is reachable again.
 
 =head1 OPTIONS
 
-None.
+=over
+
+=item B<-f>, B<--beep-file> I<file>
+
+Play I<file> instead of the default beeps. May be any sound / music file
+
+=item B<-q>, B<--quiet>
+
+Do not play beeps, visual output only
+
+=item B<-V>, B<--version>
+
+Show version information and exit
+
+=back
 
 =head1 EXIT STATUS
 

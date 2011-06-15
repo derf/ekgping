@@ -74,13 +74,15 @@ while ( usleep(100_000) ) {
 
 	$ping->pump_nb();
 
-	if ( $column++ == $column_max ) {
+	$column++;
+
+	if ( $column == $column_max ) {
 		print "\r";
 		$column = 0;
 	}
 
 	if ( $column != $column_max ) {
-		print "\e[1C \e[1D\e[1D";
+		print "\e[1C \e[2D";
 	}
 
 	if ( $id != $last_id ) {
@@ -101,7 +103,7 @@ while ( usleep(100_000) ) {
 			$beep = 1;
 		}
 
-		print '_';
+		print q{_};
 	}
 
 	STDOUT->flush();

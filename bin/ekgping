@@ -6,7 +6,8 @@ use 5.010;
 
 use IO::Handle;
 use IPC::Run qw(harness io);
-use File::Slurp qw(write_file);
+use SDL::Mixer;
+use SDL::Music;
 use Term::Size;
 use Time::HiRes qw(usleep);
 
@@ -20,19 +21,15 @@ my $beep;
 my $was_beep   = 1;
 my $dead_count = 0;
 my $column     = 0;
-my $column_max = ( Term::Size::chars * STDOUT { IO } )[0];
+my $column_max = Term::Size::chars;
 
-my $sin = q{};
-my $in;
+my $mixer      = SDL::Mixer->new();
+my $beep_sound = SDL::Music->new('beep.ogg');
 
 my $ping = harness(
 	[ 'ping', '-n', $host ],
 	'<'  => \undef,
 	'>&' => \&parse_ping_output,
-);
-
-my $beep_harness = harness(
-	io( '/dev/audio', '<', \$in ),
 );
 
 local $SIG{TERM} = \&quit;
@@ -43,14 +40,14 @@ sub parse_ping_output {
 
 	chomp($line);
 
-	if ( $line
-		=~ m{ ^ \d+ \s bytes \s from \s \S+ \s
+	if (
+		$line =~ m{ ^ \d+ \s bytes \s from \s \S+ \s
 			icmp_req = (?<id> \d+ ) \s
 			ttl = (?<ttl> \d+ ) \s
 			time = (?<time> [0-9.]+) \s ms }x
-		)
+	  )
 	{
-		$id = $+{id};
+		$id  = $+{id};
 		$rtt = $+{time};
 	}
 
@@ -63,17 +60,13 @@ sub quit {
 	exit 0;
 }
 
-for ( 1 .. 50 ) {
-	for my $i ( 0 .. 19, 18 .. 1 ) {
-		$sin .= chr( ( sin($i) + 1 ) * 126 );
-	}
-}
-
 $ping->start();
-$beep_harness->start();
 
 # Ignore first line
 $ping->pump();
+
+$mixer->play_music( $beep_sound, 999_999 );
+$mixer->pause_music();
 
 print "\e[?25l";
 
@@ -92,7 +85,7 @@ while ( usleep(100_000) ) {
 
 	if ( $id != $last_id ) {
 		$beep = 1;
-		if ($rtt < 300) {
+		if ( $rtt < 300 ) {
 			print q{^};
 		}
 		else {
@@ -114,8 +107,10 @@ while ( usleep(100_000) ) {
 	STDOUT->flush();
 
 	if ($beep) {
-		$in = $sin;
-		$beep_harness->pump_nb();
+		$mixer->resume_music();
+	}
+	else {
+		$mixer->pause_music();
 	}
 }
 

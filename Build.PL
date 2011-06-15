@@ -16,6 +16,13 @@ Module::Build->new(
 	license => 'unrestricted',
 	requires => {
 		'perl' => '5.10.0',
+		'File::ShareDir' => 0,
+		'Getopt::Long' => 0,
+		'IO::Handle' => 0,
+		'IPC::Run' => 0,
+		'SDL' => 0,
+		'Term::Size' => 0,
+		'Time::HiRes' => 0,
 	},
 	share_dir => 'share',
 	sign => 1,

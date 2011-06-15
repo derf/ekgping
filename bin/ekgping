@@ -164,6 +164,8 @@ None.
 
 =over
 
+=item = File::ShareDir(3pm)
+
 =item * IPC::Run(3pm)
 
 =item * SDL::Mixer(3pm)

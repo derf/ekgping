@@ -11,7 +11,7 @@ use SDL::Music;
 use Term::Size;
 use Time::HiRes qw(usleep);
 
-our $VERSION = '0.1';
+our $VERSION = '0.0';
 
 my $host    = shift;
 my $id      = 0;
@@ -122,19 +122,37 @@ __END__
 
 =head1 NAME
 
+B<ekgping> - Electrocardiograph-like visual and audible ping
+
 =head1 SYNOPSIS
+
+B<ekgping> I<host>
 
 =head1 VERSION
 
+version 0.0
+
 =head1 DESCRIPTION
+
+B<ekgping> pings a I<host>. Unlike ping(1), it does not output text, but
+instead displays the results in a visual and audible manner, somewhat similar
+to an electrocardiograph (short ECG / EKG).
+
+It displays a line on the whole width of the terminal. By default, the line is
+flat ("_"). Everytime a pong gets in, a spike ("^" or "-", depending on RTT)
+is drawn.
+
+Also, everytime a pong is received, a short beep is played. If the host does
+not respond for a few seconds (i.e. is unreachable/dead), B<ekgping> produces
+a continuous beep until the host is reachable again.
 
 =head1 OPTIONS
 
-=over
-
-=back
+None.
 
 =head1 EXIT STATUS
+
+Zero.
 
 =head1 CONFIGURATION
 
@@ -144,9 +162,23 @@ None.
 
 =over
 
+=item * IPC::Run(3pm)
+
+=item * SDL::Mixer(3pm)
+
+=item * SDL::Music(3pm)
+
+=item * Term::Size(3pm)
+
 =back
 
 =head1 BUGS AND LIMITATIONS
+
+B<ekgping> parses the output of ping(1), which means it assumes a certain
+output style. It will only work with ping(1) programs whose C<< ping -n >> output matches
+"<digit> bytes from <ip>: icmp_req=<digit> ttl=<digit> time=<float>".
+
+If a host is unreachable from the very beginning, B<ekgping> fails to start.
 
 =head1 AUTHOR
 

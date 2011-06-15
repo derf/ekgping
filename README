@@ -6,11 +6,11 @@ http://finalrewind.org/projects/ekgping/
 Dependencies
 ------------
 
+ * ping
  * perl >= 5.10
  * File::ShareDir
  * IPC::Run
- * SDL::Mixer
- * SDL::Music
+ * SDL
  * Term::Size
 
 Installation

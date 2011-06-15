@@ -92,7 +92,12 @@ print "\e[?25l";
 
 while ( usleep(100_000) ) {
 
-	$ping->pump_nb();
+	if ($ping->pumpable()) {
+		$ping->pump_nb();
+	}
+	elsif (($dead_count % 10) == 0)
+		$ping->start();
+	}
 
 	$column++;
 
@@ -219,8 +224,6 @@ None.
 B<ekgping> parses the output of ping(1), which means it assumes a certain
 output style. It will only work with ping(1) programs whose C<< ping -n >> output matches
 "<digit> bytes from <ip>: icmp_req=<digit> ttl=<digit> time=<float>".
-
-If a host is unreachable from the very beginning, B<ekgping> fails to start.
 
 =head1 AUTHOR
 

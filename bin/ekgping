@@ -35,11 +35,12 @@ GetOptions(
 ) or usage();
 
 my $host       = shift or usage();
+my @ping_opts  = @ARGV;
 my $mixer      = SDL::Mixer->new();
 my $beep_sound = SDL::Music->new($beep_file);
 
 my $ping = harness(
-	[ 'ping', '-n', $host ],
+	[ 'ping', '-n', @ping_opts, $host ],
 	'<'  => \undef,
 	'>&' => \&parse_ping_output,
 );
@@ -147,7 +148,7 @@ B<ekgping> - Electrocardiograph-like visual and audible ping
 
 =head1 SYNOPSIS
 
-B<ekgping> [B<-q>] [B<-f> I<file>] I<host>
+B<ekgping> [B<-q>] [B<-f> I<file>] I<host> [B<--> I<ping options>]
 
 =head1 VERSION
 
@@ -166,6 +167,10 @@ is drawn.
 Also, everytime a pong is received, a short beep is played. If the host does
 not respond for a few seconds (i.e. is unreachable/dead), B<ekgping> produces
 a continuous beep until the host is reachable again.
+
+If specified, I<ping options> are passed on to ping(1).  Note that B<ekgping>
+does not look at them - if they change the output format or set the ping
+interval too high, B<ekgping> will break.
 
 =head1 OPTIONS
 

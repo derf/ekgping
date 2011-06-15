@@ -95,7 +95,7 @@ while ( usleep(100_000) ) {
 	if ($ping->pumpable()) {
 		$ping->pump_nb();
 	}
-	elsif (($dead_count % 10) == 0)
+	elsif (($dead_count % 10) == 0) {
 		$ping->start();
 	}
 

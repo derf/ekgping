@@ -202,13 +202,13 @@ None.
 
 =over
 
-=item = File::ShareDir(3pm)
+=item * ping(1)
+
+=item * File::ShareDir(3pm)
 
 =item * IPC::Run(3pm)
 
-=item * SDL::Mixer(3pm)
-
-=item * SDL::Music(3pm)
+=item * SDL(3pm)
 
 =item * Term::Size(3pm)
 

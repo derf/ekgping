@@ -60,7 +60,7 @@ sub parse_ping_output {
 
 	if (
 		$line =~ m{ ^ \d+ \s bytes \s from \s \S+ \s
-			icmp_req = (?<id> \d+ ) \s
+			icmp_.eq = (?<id> \d+ ) \s
 			ttl = (?<ttl> \d+ ) \s
 			time = (?<time> [\d.]+) \s ms }x
 	  )

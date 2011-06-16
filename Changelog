@@ -1,3 +1,8 @@
+git HEAD
+
+    * Fix ping -n parser - apparently it was based on a buggy ping output.
+      See <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=609853>
+
 ekgping 1.1 - Thu Jun 16 2011
 
     * You can now run ekgping -f beepfile without having to run

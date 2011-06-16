@@ -10,6 +10,7 @@ Dependencies
  * perl >= 5.10
  * File::ShareDir
  * IPC::Run
+ * Module::Build
  * SDL
  * Term::Size
 
@@ -19,3 +20,7 @@ Installation
 $ perl Build.PL
 $ perl Build
 $ sudo perl Build install
+
+Note for Debian/Ubuntu users: There seem to be installation problems with perl
+5.10. If ekgping fails to find beep.ogg, try reinstalling it after installing
+libmodule-build-perl.

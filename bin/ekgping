@@ -13,7 +13,7 @@ use SDL::Music;
 use Term::Size;
 use Time::HiRes qw(usleep);
 
-our $VERSION = '1.1';
+our $VERSION = '1.2';
 
 my $beep       = 0;
 my $id         = 0;
@@ -161,7 +161,7 @@ B<ekgping> [B<-q>] [B<-t> I<timeout>] [B<-f> I<file>] I<host> [B<--> I<ping opti
 
 =head1 VERSION
 
-version 1.1
+version 1.2
 
 =head1 DESCRIPTION
 

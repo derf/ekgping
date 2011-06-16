@@ -1,6 +1,7 @@
-git HEAD
+ekgping 1.2 - Thu Jun 16 2011
 
-    * Fix ping -n parser - apparently it was based on a buggy ping output.
+    * Fix ping -n parser - it was based on a buggy(?) ping output,
+      making it fail on older Debian/Ubuntu (and possibly other) systems
       See <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=609853>
 
 ekgping 1.1 - Thu Jun 16 2011

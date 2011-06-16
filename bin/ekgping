@@ -25,11 +25,13 @@ my $column_max = Term::Size::chars;
 
 my $beep_file;
 my $quiet = 0;
+my $timeout = 3;
 
 GetOptions(
 
 	'f|beep-file=s' => \$beep_file,
 	'q|quiet'       => \$quiet,
+	't|timeout=f'   => \$timeout,
 	'V|version'     => sub { say "ekgping version ${VERSION}"; exit 0 },
 
 ) or usage();
@@ -126,7 +128,7 @@ while ( usleep(100_000) ) {
 	else {
 		$beep = 0;
 		$dead_count++;
-		if ( $dead_count > 30 ) {
+		if ( $dead_count > ($timeout * 10) ) {
 			$beep = 1;
 		}
 
@@ -155,7 +157,7 @@ B<ekgping> - Electrocardiograph-like visual and audible ping
 
 =head1 SYNOPSIS
 
-B<ekgping> [B<-q>] [B<-f> I<file>] I<host> [B<--> I<ping options>]
+B<ekgping> [B<-q>] [B<-t> I<timeout>] [B<-f> I<file>] I<host> [B<--> I<ping options>]
 
 =head1 VERSION
 
@@ -190,6 +192,14 @@ Play I<file> instead of the default beeps. May be any sound / music file
 =item B<-q>, B<--quiet>
 
 Do not play beeps, visual output only
+
+=item B<-t>, B<--timeout> I<seconds>
+
+Set ping timeout.  If no pong was received in this time, B<ekgping> will emit a
+continuous beep.  Accepts a floating point value, defaults to B<3.0>.
+
+Note that setting this lower than the ping interval (which defaults to 1
+second) does not make much sense, unless you want longer beeps per pong.
 
 =item B<-V>, B<--version>
 

@@ -1,3 +1,9 @@
+ekgping 1.1 - Thu Jun 16 2011
+
+    * You can now run ekgping -f beepfile without having to run
+      "./Build install"
+    * Add -t / --timout option (ping timeout for continuous beep)
+
 ekgping 1.0 - Wed Jun 15 2011
 
     * Initial release

@@ -14,13 +14,12 @@ Dependencies
  * SDL
  * Term::Size
 
+Note that the Module::Build version shipped with perl 5.10 is too old for
+ekgping.
+
 Installation
 ------------
 
 $ perl Build.PL
 $ perl Build
 $ sudo perl Build install
-
-Note for Debian/Ubuntu users: There seem to be installation problems with perl
-5.10. If ekgping fails to find beep.ogg, try reinstalling it after installing
-libmodule-build-perl.

@@ -237,6 +237,9 @@ B<ekgping> parses the output of ping(1), which means it assumes a certain
 output style. It will only work with ping(1) programs whose C<< ping -n >> output matches
 "<digit> bytes from <ip>: icmp_req=<digit> ttl=<digit> time=<float>".
 
+There have been reports about ekgping randomly skipping beeps. This might be
+an SDL problem, use C<< ekgping -t 0.8 >> as workaround.
+
 =head1 AUTHOR
 
 Copyright (C) 2011 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>

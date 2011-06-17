@@ -7,6 +7,7 @@ use Module::Build;
 Module::Build->new(
 
 	build_requires => {
+		'Module::Build' => '0.36',
 		'Test::Compile' => 0,
 		'Test::More' => 0,
 		'Test::Pod' => 0,

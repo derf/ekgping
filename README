@@ -10,7 +10,7 @@ Dependencies
  * perl >= 5.10
  * File::ShareDir
  * IPC::Run
- * Module::Build
+ * Module::Build >= 0.36
  * SDL
  * Term::Size
 

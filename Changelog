@@ -1,4 +1,4 @@
-git HEAD
+ekgpin 1.3 - Tue Jun 21 2011
 
     * Fix Module::Build dependency (we need >= 0.36)
     * Add --beep-when option to only play beeps when the host is either dead

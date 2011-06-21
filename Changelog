@@ -1,3 +1,9 @@
+git HEAD
+
+    * Fix Module::Build dependency (we need >= 0.36)
+    * Add --beep-when option to only play beeps when the host is either dead
+      or alive
+
 ekgping 1.2 - Thu Jun 16 2011
 
     * Fix ping -n parser - it was based on a buggy(?) ping output,

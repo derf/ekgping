@@ -5,7 +5,7 @@ use warnings;
 use 5.010;
 
 use File::ShareDir qw(dist_file);
-use Getopt::Long;
+use Getopt::Long qw(:config bundling);
 use IO::Handle;
 use IPC::Run qw(harness);
 use SDL::Mixer;
@@ -16,6 +16,7 @@ use Time::HiRes qw(usleep);
 our $VERSION = '1.2';
 
 my $beep       = 0;
+my $beep_when  = 'both';
 my $id         = 0;
 my $rtt        = 0;
 my $last_id    = 0;
@@ -29,6 +30,7 @@ my $timeout = 3;
 
 GetOptions(
 
+	'b|beep-when=s' => \$beep_when,
 	'f|beep-file=s' => \$beep_file,
 	'q|quiet'       => \$quiet,
 	't|timeout=f'   => \$timeout,
@@ -115,7 +117,11 @@ while ( usleep(100_000) ) {
 	}
 
 	if ( $id != $last_id ) {
-		$beep = 1;
+
+		if ( $beep_when ~~ [qw[a alive b both]] ) {
+			$beep = 1;
+		}
+
 		if ( $rtt < 300 ) {
 			print q{^};
 		}
@@ -128,7 +134,9 @@ while ( usleep(100_000) ) {
 	else {
 		$beep = 0;
 		$dead_count++;
-		if ( $dead_count > ( $timeout * 10 ) ) {
+		if (    $dead_count > ( $timeout * 10 )
+			and $beep_when ~~ [qw[b both d dead]] )
+		{
 			$beep = 1;
 		}
 
@@ -157,7 +165,7 @@ B<ekgping> - Electrocardiograph-like visual and audible ping
 
 =head1 SYNOPSIS
 
-B<ekgping> [B<-q>] [B<-t> I<timeout>] [B<-f> I<file>] I<host> [B<--> I<ping options>]
+B<ekgping> [B<-q>] [B<-ba>|B<-bd>] [B<-t> I<timeout>] [B<-f> I<file>] I<host> [B<--> I<ping options>]
 
 =head1 VERSION
 
@@ -184,6 +192,14 @@ interval too high, B<ekgping> will break.
 =head1 OPTIONS
 
 =over
+
+=item B<-b>, B<--beep-when> B<alive>|B<dead>|B<both>
+
+Only play beeps when the host is B<alive> (the short beeps) or B<dead> (the
+long flatline beep). Defaults to B<both>, meaning any beep will be played.
+
+You can also use the first letter of the argument, like C<< -ba >> instead of
+C<< --beep-when alive >>.
 
 =item B<-f>, B<--beep-file> I<file>
 

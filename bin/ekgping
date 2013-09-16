@@ -4,16 +4,19 @@ use strict;
 use warnings;
 use 5.010;
 
+no if $] >= 5.018, warnings => "experimental::smartmatch";
+
 use File::ShareDir qw(dist_file);
 use Getopt::Long qw(:config bundling);
 use IO::Handle;
 use IPC::Run qw(harness);
+use SDL qw(:init);
 use SDL::Mixer;
-use SDL::Music;
+use SDL::Mixer::Music;
 use Term::Size;
 use Time::HiRes qw(usleep);
 
-our $VERSION = '1.3';
+our $VERSION = '1.31';
 
 my $beep       = 0;
 my $beep_when  = 'both';
@@ -40,10 +43,18 @@ GetOptions(
 
 $beep_file //= dist_file( 'ekgping', 'beep.ogg' );
 
+if ( not $quiet ) {
+	if (SDL::init(SDL_INIT_AUDIO) != 0) {
+		warn("Failed to init SDL\n");
+	}
+	if (SDL::Mixer::open_audio( 44100, AUDIO_S16SYS, 2, 4096 ) != 0) {
+		warn("Failed to open audio device AUDIO_S16SYS");
+	}
+}
+
 my $host       = shift or usage();
 my @ping_opts  = @ARGV;
-my $mixer      = SDL::Mixer->new();
-my $beep_sound = SDL::Music->new($beep_file);
+my $beep_sound = SDL::Mixer::Music::load_MUS($beep_file);
 
 my $ping = harness(
 	[ 'ping', '-n', @ping_opts, $host ],
@@ -76,6 +87,12 @@ sub parse_ping_output {
 
 sub quit {
 	$ping->kill_kill( grace => 1 );
+
+	if (not $quiet) {
+		SDL::Mixer::close_audio;
+		SDL::quit;
+	}
+
 	print "\e[?25h";
 	exit 0;
 }
@@ -90,8 +107,8 @@ $ping->start();
 $ping->pump();
 
 if ( not $quiet ) {
-	$mixer->play_music( $beep_sound, 999_999 );
-	$mixer->pause_music();
+	SDL::Mixer::Music::play_music( $beep_sound, -1 );
+	SDL::Mixer::Music::pause_music;
 }
 
 print "\e[?25l";
@@ -147,10 +164,10 @@ while ( usleep(100_000) ) {
 
 	if ( not $quiet ) {
 		if ($beep) {
-			$mixer->resume_music();
+			SDL::Mixer::Music::resume_music;
 		}
 		else {
-			$mixer->pause_music();
+			SDL::Mixer::Music::pause_music;
 		}
 	}
 }
@@ -169,7 +186,7 @@ B<ekgping> [B<-q>] [B<-ba>|B<-bd>] [B<-t> I<timeout>] [B<-f> I<file>] I<host> [B
 
 =head1 VERSION
 
-version 1.3
+version 1.31
 
 =head1 DESCRIPTION
 

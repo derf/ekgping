@@ -16,7 +16,7 @@ use SDL::Mixer::Music;
 use Term::Size;
 use Time::HiRes qw(usleep);
 
-our $VERSION = '1.31';
+our $VERSION = '1.32';
 
 my $beep       = 0;
 my $beep_when  = 'both';
@@ -195,7 +195,7 @@ B<ekgping> [B<-q>] [B<-ba>|B<-bd>] [B<-t> I<timeout>] [B<-f> I<file>]
 
 =head1 VERSION
 
-version 1.31
+version 1.32
 
 =head1 DESCRIPTION
 

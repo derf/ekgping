@@ -26,6 +26,7 @@ my $last_id    = 0;
 my $dead_count = 0;
 my $column     = 0;
 my $column_max = Term::Size::chars;
+my $volume     = 100;
 
 my $beep_file;
 my $quiet   = 0;
@@ -35,6 +36,7 @@ GetOptions(
 
 	'b|beep-when=s' => \$beep_when,
 	'f|beep-file=s' => \$beep_file,
+	'l|volume=f'    => \$volume,
 	'q|quiet'       => \$quiet,
 	't|timeout=f'   => \$timeout,
 	'V|version'     => sub { say "ekgping version ${VERSION}"; exit 0 },
@@ -43,11 +45,16 @@ GetOptions(
 
 $beep_file //= dist_file( 'ekgping', 'beep.ogg' );
 
+if ( $volume < 0 or $volume > 100 ) {
+	warn("-l / --volume: Argument must be between 0 and 100. Setting to 50.\n");
+	$volume = 50;
+}
+
 if ( not $quiet ) {
-	if (SDL::init(SDL_INIT_AUDIO) != 0) {
+	if ( SDL::init(SDL_INIT_AUDIO) != 0 ) {
 		warn("Failed to init SDL\n");
 	}
-	if (SDL::Mixer::open_audio( 44100, AUDIO_S16SYS, 2, 4096 ) != 0) {
+	if ( SDL::Mixer::open_audio( 44100, AUDIO_S16SYS, 2, 4096 ) != 0 ) {
 		warn("Failed to open audio device AUDIO_S16SYS");
 	}
 }
@@ -88,7 +95,7 @@ sub parse_ping_output {
 sub quit {
 	$ping->kill_kill( grace => 1 );
 
-	if (not $quiet) {
+	if ( not $quiet ) {
 		SDL::Mixer::close_audio;
 		SDL::quit;
 	}
@@ -107,6 +114,7 @@ $ping->start();
 $ping->pump();
 
 if ( not $quiet ) {
+	SDL::Mixer::Music::volume_music( $volume * 1.28 );
 	SDL::Mixer::Music::play_music( $beep_sound, -1 );
 	SDL::Mixer::Music::pause_music;
 }
@@ -182,7 +190,8 @@ B<ekgping> - Electrocardiograph-like graphical and audible ping
 
 =head1 SYNOPSIS
 
-B<ekgping> [B<-q>] [B<-ba>|B<-bd>] [B<-t> I<timeout>] [B<-f> I<file>] I<host> [B<--> I<ping options>]
+B<ekgping> [B<-q>] [B<-ba>|B<-bd>] [B<-t> I<timeout>] [B<-f> I<file>]
+[B<-l> I<volume>] I<host> [B<--> I<ping options>]
 
 =head1 VERSION
 
@@ -221,6 +230,10 @@ C<< --beep-when alive >>.
 =item B<-f>, B<--beep-file> I<file>
 
 Play I<file> instead of the default beeps. May be any sound / music file
+
+=item B<-l>, B<--volume> I<volume>
+
+Set volume to I<volume> per cent (minimum 0, maximum 100). Default: B<100>.
 
 =item B<-q>, B<--quiet>
 
@@ -275,7 +288,7 @@ an SDL problem, use C<< ekgping -t 0.8 >> as workaround.
 
 =head1 AUTHOR
 
-Copyright (C) 2011 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
+Copyright (C) 2011-2017 by Daniel Friesel E<lt>derf@finalrewind.orgE<gt>
 
 =head1 LICENSE
 
